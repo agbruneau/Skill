@@ -1,35 +1,65 @@
-# CLAUDE.md — Skill
+# CLAUDE.md
 
-Collection de directives comportementales et de prompts systèmes pour différents modèles d'IA (LLM). Sert de base de connaissances en ingénierie de prompts pour standardiser et optimiser les réponses de chaque système.
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
-## Projet
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
-- **Auteur** : André-Guy Bruneau
-- **Type** : Prompt engineering knowledge base
-- **Langues** : Français (principal), Anglais (Claude.md)
+## 1. Think Before Coding
 
-## Contenu
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
 
-| Fichier | Cible | Domaine |
-|---------|-------|---------|
-| `Claude.md` | Claude (Anthropic) | Directives de développement logiciel |
-| `Gemini.md` | Gemini (Google) | Architecture d'entreprise, rigueur absolue, citations traçables |
-| `OIA.md` | Méthode O.I.A. | Analyse théologique/biblique (Observation, Interprétation, Application) |
-| `Perplexcity.md` | Perplexity | Recherche technique, format pyramidal, concision |
-| `Theo.md` | Framework théologique | Théologie réformée (VERSION 3.0), herméneutique littérale-grammaticale-historique |
+Before implementing:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
 
-## Conventions
+## 2. Simplicity First
 
-- Chaque fichier est autonome et auto-contenu.
-- Les fichiers AI (`Claude.md`, `Gemini.md`, `Perplexcity.md`) définissent persona, style de réponse et protocoles de citation.
-- Les fichiers théologiques (`OIA.md`, `Theo.md`) définissent des cadres méthodologiques rigoureux.
-- Branche principale : `main`
+**Minimum code that solves the problem. Nothing speculative.**
 
-## Directives pour Claude
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
 
-1. **Ce fichier est auto-référentiel** : Claude.md dans ce dépôt définit les directives *pour* Claude. Les modifications ici affectent le comportement de Claude dans ce contexte.
-2. **Cohérence inter-fichiers** : Les principes de rigueur, citation et clarté sont communs à tous les fichiers — ne pas introduire de contradictions.
-3. **Pas de fusion** : Chaque fichier cible un système distinct. Ne pas mélanger les conventions de Gemini dans Perplexcity, etc.
-4. **Respect du cadre théologique** : `Theo.md` et `OIA.md` suivent une tradition réformée précise. Ne pas modifier les présupposés doctrinaux sans instruction explicite.
-5. **Versioning** : `Theo.md` est versionné (VERSION 3.0). Incrémenter le numéro de version lors de modifications substantielles.
-6. **Format** : Markdown pur, pas de dépendances, pas de build system.
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+---
+
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
