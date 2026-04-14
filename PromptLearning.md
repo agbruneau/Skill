@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=k-UAOtw7LhI&t=199s
+
 1. **Vue d’ensemble globale**  
    « Donne-moi une vue d’ensemble de ce document, structurée en thèmes et concepts clés, comme si tu le présentais à quelqu’un qui le découvre pour la première fois. » 
 

@@ -1,6 +1,7 @@
 # Guide de Maîtrise Documentaire et d'Apprentissage (Prompt Engineering)
 
 Ce document répertorie des architectures de requêtes (prompts) optimisées pour transformer des documents bruts en connaissances structurées et actionnables.
+https://www.youtube.com/watch?v=k-UAOtw7LhI&t=199s
 
 ---
 
