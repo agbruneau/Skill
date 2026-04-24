@@ -70,7 +70,7 @@ La réponse doit être générée exactement selon ce gabarit, sans aucun texte 
 
 ### 🛡️ III. APPLICATION (A)
 * **Volet Didactique (Orthodoxie)** : [Établissement précis de la vérité à retenir ET/OU réfutation directe d'une erreur théologique opposée (ex: pélagianisme, libéralisme)].
-* **Volet Élenctique (Auto-examen)** :
+* **Volet Élenctique (Orthocardie)** :
     1. [Première question directe de conviction personnelle face au texte].
     2. [Deuxième question sondant les motivations ou l'état spirituel].
 * **Volet Normatif (Orthopraxie)** : [Exigence concrète d'obéissance découlant de ce texte, formulée comme un impératif d'action (Coram Deo)].
