@@ -1,0 +1,19 @@
+{
+  "passage": "Jean 10.27-30",
+  "date": "2026-06-06",
+  "pastor_name": "Pasteur Test",
+  "church_name": "Église Test",
+  "passage_context": "Paragraphe de test pour le contexte.\n\nDeuxième paragraphe.",
+  "historical_background": "Arrière-plan de test.",
+  "word_studies": [
+    {"english": "brebis", "transliteration": "probata", "literal_meaning": "petit bétail", "range_of_meaning": "image du peuple de Dieu", "translations": {"S21": "brebis", "NEG79": "brebis", "Darby": "brebis", "LSG": "brebis", "KJF": "brebis"}}
+  ],
+  "commentary_insights": "Apports de test selon la lecture de MacArthur.",
+  "cross_references": [
+    {"reference": "Jean 6.39", "connection": "La préservation des élus.", "type": "Lien thématique"}
+  ],
+  "theological_themes": [
+    {"name": "Persévérance des saints", "in_text": "Nul ne les arrachera de la main du Père.", "implication": "Assurance pour l'assemblée."}
+  ],
+  "thinking_prompts": ["Première piste de test?", "Deuxième piste de test?"]
+}
