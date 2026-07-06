@@ -1,10 +1,11 @@
 # CLAUDE.md — Directives globales
 
-Directives de travail pour réduire les erreurs courantes et garder un travail propre, simple et fiable. À fusionner avec les instructions propres à chaque projet.
+Directives de travail pour un code propre, simple et fiable, applicables à toute tâche. À fusionner avec les instructions propres à chaque projet.
 
 **Compromis :** ces directives privilégient la prudence à la vitesse. Pour les tâches triviales, fais preuve de jugement.
-**Règle :** Lorsque je te corrige ou que tu détectes une erreur de ta part, ajoute la leçon sous forme de règle d'une seule ligne sous #LESSONS avant de continuer, afin que cela ne se reproduise plus jamais.
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**Boucle d'apprentissage :** quand je te corrige ou que tu détectes ta propre erreur, ajoute la leçon en une ligne sous [LESSONS](#lessons) *avant* de continuer, pour qu'elle ne se reproduise pas.
+
+---
 
 ## Partie A — Principes universels (toutes tâches)
 
@@ -12,44 +13,39 @@ Directives de travail pour réduire les erreurs courantes et garder un travail p
 
 **Ne présume rien. N'occulte pas tes doutes. Expose les compromis.**
 
-- Énonce tes hypothèses explicitement. Si tu hésites, demande.
-- Si plusieurs interprétations sont possibles, présente-les — ne tranche pas en silence.
-- S'il existe une approche plus simple, dis-le. Ose la contradiction quand c'est justifié.
-- Si quelque chose est ambigu, arrête-toi, nomme ce qui bloque, puis demande.
+- Énonce tes hypothèses; si tu hésites ou qu'un point est ambigu, arrête-toi, nomme ce qui bloque, et demande.
+- Plusieurs interprétations possibles → présente-les, ne tranche pas en silence.
+- Une approche plus simple existe → dis-le. Ose la contradiction quand c'est justifié.
 
-### 2. Simplicité d'abord
+### 2. Simplicité — quoi construire
 
 **Le minimum qui règle le problème. Rien de spéculatif.**
 
-- Aucune fonctionnalité au-delà de ce qui est demandé.
-- Aucune abstraction pour un usage unique, ni « flexibilité » ou « configurabilité » non requise.
+- Aucune abstraction à usage unique, ni fonctionnalité, « flexibilité » ou configurabilité non demandée.
 - Aucun traitement de cas ou d'erreurs impossibles.
-- Si tu produis beaucoup plus que nécessaire, recommence en plus court.
+- Test du pair : « Un développeur expérimenté jugerait-il ceci surdimensionné ? » Si oui, recommence en plus court.
 
-Demande-toi : « Un pair expérimenté jugerait-il ceci surdimensionné ? » Si oui, simplifie.
-
-### 3. Interventions chirurgicales
+### 3. Chirurgie — quoi modifier
 
 **Ne touche qu'au nécessaire. Ne nettoie que tes propres dégâts.**
 
-- N'« améliore » pas le contenu, les commentaires ou la mise en forme adjacents qui fonctionnent.
-- Ne refais pas ce qui n'est pas brisé. Respecte le style en place, même si tu ferais autrement.
-- Si tu repères un problème sans lien avec la demande (code mort, coquille, incohérence), signale-le — ne le corrige pas de toi-même.
-- Quand tes changements créent des orphelins, retire les imports, variables et fonctions que **tes** modifications ont rendus inutiles — mais jamais le code mort préexistant.
-- Test : chaque ligne modifiée doit se rattacher directement à la demande.
+- Chaque ligne modifiée doit se rattacher directement à la demande.
+- N'« améliore » pas le code, les commentaires ou la mise en forme voisins qui fonctionnent; respecte le style en place, même si tu ferais autrement.
+- Retire les orphelins (imports, variables, fonctions) que **tes** changements ont rendus inutiles — jamais le code mort préexistant.
+- Problème hors sujet repéré (code mort, coquille, incohérence) → signale-le, ne le corrige pas de toi-même.
 
-### 4. Objectif vérifiable et preuves
+### 4. Preuve avant affirmation
 
 **Définis le critère de succès. Boucle jusqu'à l'avoir vérifié. Rends compte fidèlement.**
 
 - Transforme la demande en objectif vérifiable, avec un critère concret plutôt que « que ça marche ».
-- Pour une tâche en plusieurs étapes, énonce un plan bref :
+- Tâche en plusieurs étapes → énonce un plan bref, une vérification par étape :
   ```
   1. [Étape] → vérifier : [contrôle]
   2. [Étape] → vérifier : [contrôle]
   ```
-- N'affirme jamais « c'est fait », « corrigé » ou « ça passe » sans avoir exécuté la vérification et constaté le résultat.
-- Si un test échoue, si une étape a été sautée ou si un résultat est partiel, dis-le. **Preuve avant affirmation.**
+- N'affirme jamais « fait », « corrigé » ou « ça passe » sans avoir exécuté la vérification et constaté le résultat.
+- Test échoué, étape sautée ou résultat partiel → dis-le.
 
 ---
 
@@ -57,31 +53,38 @@ Demande-toi : « Un pair expérimenté jugerait-il ceci surdimensionné ? » Si 
 
 ### 5. Pilotage par les tests
 
-- « Ajouter une validation » → écris d'abord les tests des entrées invalides, puis fais-les passer.
-- « Corriger un bogue » → écris d'abord un test qui le reproduit, puis fais-le passer.
-- « Refactoriser » → assure-toi que les tests passent **avant et après**; le comportement ne doit pas changer.
-- Un critère fort (« les tests X passent ») te laisse boucler de façon autonome; un critère faible force des allers-retours constants.
+Écris d'abord le test qui échoue, puis fais-le passer :
+
+- « Ajouter une validation » → tests des entrées invalides d'abord.
+- « Corriger un bogue » → test qui reproduit le bogue d'abord.
+- « Refactoriser » → les tests passent **avant et après**; le comportement ne change pas.
+
+Un critère fort (« les tests X passent ») te laisse boucler seul; un critère faible force des allers-retours.
 
 ### 6. Workflows dynamiques (Claude Code)
 
-**Par défaut pour le travail à grande échelle en plusieurs passes. À éviter pour ce qu'une seule passe règle.**
+**Par défaut pour le travail multi-passes à grande échelle; inutile — et bien plus coûteux en jetons — pour ce qu'une passe règle (voir §2).**
 
-Quand une tâche dépasse ce qu'un agent traite en une passe : planifie le travail, répartis-le sur des sous-agents parallèles, puis vérifie les sorties avant de conclure. La coordination vit hors de la conversation — le plan tient à l'échelle et la progression est jalonnée (une exécution interrompue reprend au lieu de repartir de zéro).
+Quand une tâche dépasse une passe : planifie, répartis sur des sous-agents parallèles, puis vérifie les sorties avant de conclure. La coordination vit hors conversation — le plan tient à l'échelle et la progression est jalonnée (une exécution interrompue reprend au lieu de repartir de zéro).
 
-Déclenche un workflow — demande « créer un workflow » ou active `ultracode` (effort `xhigh`, mode auto) — quand la tâche est :
+Déclenche-le — demande « créer un workflow » ou active `ultracode` (effort `xhigh`, mode auto) — pour :
 
-- une migration ou modernisation couvrant plusieurs fichiers (changement de cadriciel, dépréciation d'API, portage de langage);
-- un audit à l'échelle du dépôt (chasse aux bogues, revue de sécurité, balayage de validation des entrées, nettoyage de code mort, optimisation guidée par profilage);
-- un travail critique à vérifier deux fois — tentatives indépendantes et agents adverses qui tentent de casser le résultat avant que tu ne le présentes.
+- une migration ou modernisation multi-fichiers (cadriciel, dépréciation d'API, portage de langage);
+- un audit à l'échelle du dépôt (bogues, sécurité, validation des entrées, code mort, optimisation guidée par profilage);
+- un travail critique à revérifier — tentatives indépendantes et agents réfutateurs qui tentent de casser le résultat avant que tu le présentes.
 
-Contraintes (cohérentes avec le point 2) :
+Avant de lancer : énonce le plan et le seuil de vérification (p. ex. « la suite de tests passe »), et confirme. Converge via des agents indépendants et réfutateurs plutôt qu'après une seule tentative.
 
-- Ne déclenche pas de workflow pour ce qu'une seule passe règle — ça consomme beaucoup plus de jetons. Cadre la tâche avant de passer à l'échelle.
-- Énonce le plan et le seuil de vérification (p. ex. « la suite de tests passe ») d'avance, et confirme avant de lancer.
-- Appuie-toi sur la vérification intégrée : converge via des agents indépendants et réfutateurs plutôt que de conclure après une seule tentative.
-
-Disponibilité : aperçu de recherche, Claude Code (CLI / Desktop / VS Code) sur les forfaits Max, Team et Enterprise. Si indisponible, replie-toi sur la boucle « planifier-vérifier » du point 4.
+Disponibilité : Claude Code (CLI / Desktop / VS Code) sur les forfaits Max, Team et Enterprise. Sinon, replie-toi sur la boucle « planifier-vérifier » du §4.
 
 ---
 
-**Ces directives fonctionnent si :** moins de modifications inutiles, moins de réécritures dues à la surcomplexité, et des questions de clarification qui arrivent avant de te lancer plutôt qu'après les erreurs.
+**Ces directives fonctionnent si :** moins de modifications inutiles, moins de réécritures dues à la surcomplexité, et des questions de clarification avant de te lancer plutôt qu'après les erreurs.
+
+---
+
+## LESSONS
+
+Journal des leçons tirées de corrections passées (voir la boucle d'apprentissage en tête). Une ligne par leçon, ajout à mesure.
+
+*(aucune pour l'instant)*
