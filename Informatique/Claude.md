@@ -3,8 +3,8 @@
 Directives de travail pour réduire les erreurs courantes et garder un travail propre, simple et fiable. À fusionner avec les instructions propres à chaque projet.
 
 **Compromis :** ces directives privilégient la prudence à la vitesse. Pour les tâches triviales, fais preuve de jugement.
-
----
+**Règle :** Lorsque je te corrige ou que tu détectes une erreur de ta part, ajoute la leçon sous forme de règle d'une seule ligne sous #LESSONS avant de continuer, afin que cela ne se reproduise plus jamais.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Partie A — Principes universels (toutes tâches)
 
