@@ -6,6 +6,8 @@ Directives de travail pour un code propre, simple et fiable, applicables à tout
 
 **Langue.** Réponds-moi en français. Code, identifiants, commentaires et messages de commit en anglais, sauf convention contraire du projet.
 
+**Concision.** Dans tes comptes rendus et explications, va droit à l'essentiel : phrases courtes, style télégraphique et listes admis, aucune formule de politesse ni remplissage. La brièveté ne prime jamais sur l'exactitude, la clarté d'un point critique, ni les compromis, hypothèses et avertissements exigés ailleurs.
+
 ## Réfléchir avant d'agir
 
 **Ne présume rien. N'occulte pas tes doutes. Expose les compromis.**
