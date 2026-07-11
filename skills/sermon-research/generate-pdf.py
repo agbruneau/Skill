@@ -17,11 +17,59 @@ sys.path.insert(0, os.path.join(_here, "..", "..", "shared"))
 
 from pdf_utils import (
     NAVY, GOLD, SLATE, LIGHT_BG, RULE_GRAY, WHITE,
+    LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN, PAGE_W,
     build_styles, section_header, add_section, add_title_banner,
-    add_reachright_footer, make_page_footer, create_doc, add_shaded_box,
+    create_doc,
 )
-from reportlab.platypus import Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import Paragraph, Spacer, Table, TableStyle, HRFlowable
 from reportlab.lib.units import inch
+from reportlab.lib.styles import ParagraphStyle
+
+
+# ponytail: shared pdf_utils.py was retooled for the MacArthur variant and no
+# longer exports add_reachright_footer/add_shaded_box, and its
+# make_page_footer hardcodes "perspective John MacArthur" regardless of
+# scope. Kept local here instead of touching the shared file, so the
+# MacArthur flow (which depends on the current shared API) stays untouched.
+# Upgrade path: if the shared module regains generic (non-MacArthur) footer
+# support, drop these locals and import from pdf_utils again.
+
+def add_shaded_box(story, elements, styles):
+    """Cream box with a gold left rule, holding a list of flowables."""
+    content_width = PAGE_W - LEFT_MARGIN - RIGHT_MARGIN
+    t = Table([[e] for e in elements], colWidths=[content_width])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), LIGHT_BG),
+        ("LINEBEFORE", (0, 0), (0, -1), 3, GOLD),
+        ("LEFTPADDING", (0, 0), (-1, -1), 14),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 14),
+        ("TOPPADDING", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+    ]))
+    story.append(t)
+
+
+def add_reachright_footer(story, styles):
+    story.append(Spacer(1, 20))
+    story.append(HRFlowable(width="100%", thickness=1, color=GOLD, spaceAfter=6))
+    story.append(Paragraph(
+        "Document de préparation : un point de départ pour l'étude, "
+        "pas un substitut à la prière et à l'Esprit.",
+        styles["body_label"],
+    ))
+
+
+def _page_footer(canvas, doc):
+    canvas.saveState()
+    y = BOTTOM_MARGIN - 22
+    canvas.setStrokeColor(RULE_GRAY)
+    canvas.setLineWidth(0.5)
+    canvas.line(LEFT_MARGIN, y + 10, PAGE_W - RIGHT_MARGIN, y + 10)
+    canvas.setFont("Helvetica", 8)
+    canvas.setFillColor(SLATE)
+    canvas.drawString(LEFT_MARGIN, y, "Recherche de préparation de sermon")
+    canvas.drawRightString(PAGE_W - RIGHT_MARGIN, y, f"Page {doc.page}")
+    canvas.restoreState()
 
 
 # --- Sermon-specific layout functions ---
@@ -29,15 +77,15 @@ from reportlab.lib.units import inch
 
 def add_word_studies(story, word_studies, styles):
     """Add the word study table with refined styling."""
-    section_header(story, "Key Word Study", styles)
+    section_header(story, "Étude des mots-clés", styles)
 
     if not word_studies:
-        story.append(Paragraph("No word studies provided.", styles["body"]))
+        story.append(Paragraph("Aucune étude de mots fournie.", styles["body"]))
         return
 
     headers = [
-        "English", "Transliteration",
-        "Literal Meaning", "Range of Meaning", "Translations"
+        "Mot", "Translitération",
+        "Sens littéral", "Champ sémantique", "Traductions comparées"
     ]
 
     header_row = [Paragraph(h, styles["table_header"]) for h in headers]
@@ -95,10 +143,10 @@ def add_word_studies(story, word_studies, styles):
 
 def add_cross_references(story, cross_refs, styles):
     """Add cross-references as a formatted bullet list."""
-    section_header(story, "Cross-References and Parallel Passages", styles)
+    section_header(story, "Renvois et passages parallèles", styles)
 
     if not cross_refs:
-        story.append(Paragraph("No cross-references provided.", styles["body"]))
+        story.append(Paragraph("Aucun renvoi fourni.", styles["body"]))
         return
 
     for ref in cross_refs:
@@ -113,10 +161,10 @@ def add_cross_references(story, cross_refs, styles):
 
 def add_theological_themes(story, themes, styles):
     """Add theological themes with structured sub-sections."""
-    section_header(story, "Theological Themes", styles)
+    section_header(story, "Thèmes théologiques", styles)
 
     if not themes:
-        story.append(Paragraph("No themes provided.", styles["body"]))
+        story.append(Paragraph("Aucun thème fourni.", styles["body"]))
         return
 
     from reportlab.platypus import HRFlowable
@@ -134,11 +182,11 @@ def add_theological_themes(story, themes, styles):
         ))
 
         if in_text:
-            story.append(Paragraph("IN THE TEXT", styles["body_label"]))
+            story.append(Paragraph("DANS LE TEXTE", styles["body_label"]))
             story.append(Paragraph(in_text, styles["body_content"]))
 
         if implication:
-            story.append(Paragraph("FOR YOUR CONGREGATION", styles["body_label"]))
+            story.append(Paragraph("POUR VOTRE ASSEMBLÉE", styles["body_label"]))
             story.append(Paragraph(implication, styles["body_content"]))
 
         story.append(Spacer(1, 8))
@@ -146,10 +194,10 @@ def add_theological_themes(story, themes, styles):
 
 def add_thinking_prompts(story, prompts, styles):
     """Add thinking prompts inside a shaded container with gold left border."""
-    section_header(story, "Thinking Prompts", styles)
+    section_header(story, "Pistes de réflexion", styles)
 
     if not prompts:
-        story.append(Paragraph("No prompts provided.", styles["body"]))
+        story.append(Paragraph("Aucune piste fournie.", styles["body"]))
         return
 
     # Build prompt paragraphs
@@ -171,17 +219,24 @@ def generate_pdf(json_path, output_path=None):
         data = json.load(f)
 
     if not output_path:
-        passage = data.get("passage", "research")
+        passage = data.get("passage", "recherche")
         safe_name = passage.replace(":", "-").replace(" ", "-")
-        output_path = f"Sermon-Research-{safe_name}.pdf"
+        output_path = f"Recherche-Sermon-{safe_name}.pdf"
 
     doc = create_doc(
         output_path,
-        title=f"Sermon Research: {data.get('passage', '')}",
+        title=f"Recherche de sermon : {data.get('passage', '')}",
         author=data.get("pastor_name", ""),
     )
 
     styles = build_styles()
+    # ponytail: shared build_styles() dropped "bullet" and "body_content"
+    # when it was retooled for the MacArthur variant. Patched locally
+    # for the same reason as the footer helpers above.
+    styles.setdefault("body_content", styles["body_content_tight"])
+    styles.setdefault("bullet", ParagraphStyle(
+        "bullet", parent=styles["body"], leftIndent=14, bulletIndent=0,
+    ))
     story = []
 
     # Title banner
@@ -193,15 +248,15 @@ def generate_pdf(json_path, output_path=None):
     if data.get("church_name"):
         meta_parts.append(data["church_name"])
 
-    add_title_banner(story, "SERMON RESEARCH", data.get("passage", ""), meta_parts, styles)
+    add_title_banner(story, "RECHERCHE DE SERMON", data.get("passage", ""), meta_parts, styles)
 
     # Sections
     if data.get("passage_context"):
-        add_section(story, "Passage Context", data["passage_context"], styles)
+        add_section(story, "Contexte du passage", data["passage_context"], styles)
 
     if data.get("historical_background"):
         add_section(
-            story, "Historical and Cultural Background",
+            story, "Arrière-plan historique et culturel",
             data["historical_background"], styles
         )
 
@@ -210,7 +265,7 @@ def generate_pdf(json_path, output_path=None):
 
     if data.get("commentary_insights"):
         add_section(
-            story, "Commentary Insights",
+            story, "Apports des commentateurs",
             data["commentary_insights"], styles
         )
 
@@ -226,8 +281,7 @@ def generate_pdf(json_path, output_path=None):
     # REACHRIGHT branding
     add_reachright_footer(story, styles)
 
-    page_footer = make_page_footer("reachright")
-    doc.build(story, onFirstPage=page_footer, onLaterPages=page_footer)
+    doc.build(story, onFirstPage=_page_footer, onLaterPages=_page_footer)
 
     return os.path.abspath(output_path)
 
